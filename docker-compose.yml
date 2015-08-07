@@ -1,0 +1,20 @@
+galaxy:
+  restart: never
+  image: galaxy
+  ports:
+    - 8080:8080
+  environment:
+    GALAXY_CONFIG_DATABASE_CONNECTION: postgresql://galaxy:calvin@postgres:5432/toolshed
+  links:
+    - postgres
+postgres:
+  restart: never
+  image: postgres:9.4
+  environment:
+    POSTGRES_PASSWORD: calvin
+  volumes_from:
+    - dbdata
+dbdata:
+  restart: never
+  image: postgres:9.4
+  command: echo "Data-only container for postgres"
