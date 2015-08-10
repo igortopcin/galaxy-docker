@@ -19,6 +19,9 @@ The following will run galaxy on host port 8080:
 docker run -d --name galaxy -p 8080:8080 galaxy
 ```
 
+# HTCondor configuration
+HTCondor is enabled by default in this image. Its default configuration can be found in ``./config``, but any configuration parameter can be overriden by environment variables prefixed by ``_CONDOR_``.
+
 ## Bootstrapping
 TBD
 

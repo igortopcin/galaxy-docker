@@ -4,10 +4,7 @@
 ############################################################
 
 # Set the base image to Ubuntu
-FROM ubuntu:trusty
-
-# Update the sources list and install basic packages
-RUN apt-get update && apt-get install -y tar less git curl vim wget unzip netcat software-properties-common
+FROM mig.ime.usp.br:5000/toolshed:latest
 
 # Add neurodebian packages to apt-get and condor to apt-sources
 # TODO: This is required by many neuroimaging tools, but it should really be placed somewhere else (within tool?). For now, we will have to live with it.
@@ -19,8 +16,6 @@ RUN wget -O- http://neuro.debian.net/lists/trusty.us-ca.full | tee /etc/apt/sour
     apt-get update
 
 RUN apt-get install -y \
-    python-pip \
-    python-virtualenv \
     mricron \
     fsl-core \
     afni \
@@ -37,19 +32,16 @@ RUN ["/bin/bash", "-c", "source /etc/afni/afni.sh"]
 RUN ["/bin/bash", "-c", "source /etc/fsl/fsl.sh"]
 
 # Configure condor submitter
-ADD ./docker/galaxy/resources/condor_config.local /etc/condor/condor_config.local
-# Need to restart condor so config is picked up
-RUN /etc/init.d/condor restart
+ADD ./config/condor_config.local /etc/condor/condor_config.local
+# Make sure we stop condor - it will be started just before we start galaxy server
+RUN /etc/init.d/condor stop
 
-# Update python setuptools from source
-# TODO: Only necessary because we have to build niibabel and pydicom from source. Those are required by some custom datatypes (datatypes dependencies cannot be resolved outside tool execution in Galaxy). To remove this dependency, we must rewrite some parts of those datatypes first.
-RUN wget https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py -O - | python
+ENV _CONDOR_CONDOR_HOST=condormanager \
+    _CONDOR_COLLECTOR_NAME=medsquare \
+    _CONDOR_CONDOR_ADMIN=dev@mig.ime.usp.br
 
-# Configure Galaxy Application
-ENV GALAXY_HOME /usr/local/galaxy
-ENV GALAXY_DATA /data
-
-# Add project to the image
+# Update galaxy contents with Medical Imaging Galaxy
+RUN rm -rf $GALAXY_HOME
 ADD galaxy $GALAXY_HOME
 
 # Expose Galaxy data dir as a mountable volume
@@ -58,7 +50,6 @@ VOLUME $GALAXY_DATA
 # Prepare startup and scramble eggs manually (see above TODO comment)
 WORKDIR $GALAXY_HOME
 
-RUN ./scripts/common_startup.sh
 RUN python scripts/scramble.py -c config/galaxy.ini.sample -e pydicom
 RUN python scripts/scramble.py -c config/galaxy.ini.sample -e nibabel
 

@@ -1,0 +1,114 @@
+## This setting specifies an IP address that depends on the setting of
+## BIND_ALL_INTERFACES. If BIND_ALL_INTERFACES  is True (the default), then
+## this variable controls what IP address will be advertised as the public
+## address of the daemon. If BIND_ALL_INTERFACES is False, then this variable
+## specifies which IP address to bind network sockets to. If
+## BIND_ALL_INTERFACES is False  and NETWORK_INTERFACE is not defined, Condor
+## chooses a network interface automatically. It tries to choose a public
+## interface if one is available. If it cannot decide which of two interfaces
+## to choose from, it will pick the first one.
+BIND_ALL_INTERFACES = FALSE
+#NETWORK_INTERFACE = 127.0.0.1
+
+##  What machine is your central manager?
+CONDOR_HOST = condormanager
+
+## Pool's short description
+COLLECTOR_NAME = medsquare
+
+##  When something goes wrong with condor at your site, who should get
+##  the email?
+CONDOR_ADMIN = dev@mig.ime.usp.br
+
+##  What machines have administrative rights for your pool?  This
+##  defaults to your central manager.  You should set it to the
+##  machine(s) where whoever is the condor administrator(s) works
+##  (assuming you trust all the users who log into that/those
+##  machine(s), since this is machine-wide access you're granting).
+ALLOW_ADMINISTRATOR = $(CONDOR_HOST), $(IP_ADDRESS), localhost, 127.0.0.1
+
+##  What machines should have "owner" access to your machines, meaning
+##  they can issue commands that a machine owner should be able to
+##  issue to their own machine (like condor_vacate).  This defaults to
+##  machines with administrator access, and the local machine.  This
+##  is probably what you want.
+ALLOW_OWNER = $(FULL_HOSTNAME), $(ALLOW_ADMINISTRATOR), localhost, 127.0.0.1
+
+##  Read access.  Machines listed as allow (and/or not listed as deny)
+##  can view the status of your pool, but cannot join your pool
+##  or run jobs.
+##  NOTE: By default, without these entries customized, you
+##  are granting read access to the whole world.  You may want to
+##  restrict that to hosts in your domain.  If possible, please also
+##  grant read access to "*.cs.wisc.edu", so the Condor developers
+##  will be able to view the status of your pool and more easily help
+##  you install, configure or debug your Condor installation.
+##  It is important to have this defined.
+ALLOW_READ = *
+#ALLOW_READ = *.your.domain, *.cs.wisc.edu
+
+##  Write access.  Machines listed here can join your pool, submit
+##  jobs, etc.  Note: Any machine which has WRITE access must
+##  also be granted READ access.  Granting WRITE access below does
+##  not also automatically grant READ access; you must change
+##  ALLOW_READ above as well.
+##
+##  You must set this to something else before Condor will run.
+##  This most simple option is:
+##    ALLOW_WRITE = *
+##  but note that this will allow anyone to submit jobs or add
+##  machines to your pool and is a serious security risk.
+ALLOW_WRITE = $(FULL_HOSTNAME), $(IP_ADDRESS), *.mig.ime.usp.br, localhost, 127.0.0.1
+# *.mig.ime.usp.br   ---> All sites that run MIGalaxy
+#ALLOW_WRITE = *.your.domain, your-friend's-machine.other.domain
+
+##  Are you upgrading to a new version of Condor and confused about
+##  why the above ALLOW_WRITE setting is causing Condor to refuse to
+##  start up?  If you are upgrading from a configuration that uses
+##  HOSTALLOW/HOSTDENY instead of ALLOW/DENY we recommend that you
+##  convert all uses of the former to the latter.  The syntax of the
+##  authorization settings is identical.  They both support
+##  unauthenticated IP-based authorization as well as authenticated
+##  user-based authorization.  To avoid confusion, the use of
+##  HOSTALLOW/HOSTDENY is discouraged.  Support for it may be removed
+##  in the future.
+##  Negotiator access.  Machines listed here are trusted central
+##  managers.  You should normally not have to change this.
+ALLOW_NEGOTIATOR = $(CONDOR_HOST), $(IP_ADDRESS), localhost, 127.0.0.1
+
+##  Now, with flocking we need to let the SCHEDD trust the other
+##  negotiators we are flocking with as well.  You should normally
+##  not have to change this either.
+ALLOW_NEGOTIATOR_SCHEDD = $(CONDOR_HOST), $(FLOCK_NEGOTIATOR_HOSTS), $(IP_ADDRESS), localhost, 127.0.0.1
+
+##  If your site needs to use UID_DOMAIN settings (defined above) that
+##  are not real Internet domains that match the hostnames, you can
+##  tell Condor to trust whatever UID_DOMAIN a submit machine gives to
+##  the execute machine and just make sure the two strings match.  The
+##  default for this setting is False, since it is more secure this
+##  way.
+UID_DOMAIN = medsquare.org
+TRUST_UID_DOMAIN = True
+
+##  When is this machine willing to start a job?
+START = TRUE
+
+##  When to suspend a job?
+SUSPEND = FALSE
+
+##  When to nicely stop a job?
+##  (as opposed to killing it instantaneously)
+PREEMPT = FALSE
+
+##  When to instantaneously kill a preempting job
+##  (e.g. if a job is in the pre-empting stage for too long)
+KILL = FALSE
+
+##  This macro determines what daemons the condor_master will start and keep its watchful eyes on.
+##  The list is a comma or space separated list of subsystem names
+DAEMON_LIST = MASTER, SCHEDD
+
+## For a simple personal condor setup there are issues
+## with default AUTH.
+SEC_CLIENT_AUTHENTICATION_METHODS = CLAIMTOBE
+SEC_DEFAULT_AUTHENTICATION_METHODS = CLAIMTOBE

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<job_conf>
+    <plugins workers="4">
+        <!-- "workers" is the number of threads for the runner's work queue.
+             The default from <plugins> is used if not defined for a <plugin>.
+          -->
+        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
+        <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
+    </plugins>
+    <handlers default="handlers">
+        <!-- Additional job handlers - the id should match the name of a
+             [server:<id>] in galaxy.ini.
+         -->
+        <handler id="handler0" tags="handlers"/>
+        <handler id="handler1" tags="handlers"/>
+    </handlers>
+    <destinations default="local">
+        <!-- Destinations define details about remote resources and how jobs
+             should be executed on those remote resources.
+         -->
+        <destination id="local" runner="local"/>
+        <destination id="condor" runner="condor">
+            <!-- With no params, jobs are submitted to the 'vanilla' universe with:
+                    notification = NEVER
+                    getenv = true
+                 Additional/override query ClassAd params can be specified with
+                 <param> tags.
+            <param id="request_cpus">2</param>
+            -->
+        </destination>
+
+    </destinations>
+</job_conf>
