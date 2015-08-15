@@ -20,7 +20,14 @@ docker run -d --name galaxy -p 8080:8080 galaxy
 ```
 
 # HTCondor configuration
-HTCondor is enabled by default in this image. Its default configuration can be found in ``./config``, but any configuration parameter can be overriden by environment variables prefixed by ``_CONDOR_``.
+HTCondor is installed by default in this image, but it does not run by default. Its default configuration can be found in ``./config``, but any configuration parameter can be overriden by environment variables prefixed by ``_CONDOR_``.
+
+To enable HTCondor, one must start the docker image with ``--run-condor`` argument. For example:
+```shell
+docker run -d --name galaxy -p 8080:8080 galaxy --run-condor
+```
+
+When HTCondor is enabled, ``./config/job_conf.xml.sample_condor`` is used. However, when HTCondor is disabled (the default), ``./config/job_conf.xml.sample_basic`` is used.
 
 ## Bootstrapping
 TBD
@@ -39,7 +46,7 @@ createuser -P galaxy
 createdb -O galaxy galaxy
 ```
 
-Finally, run ``docker build -t galaxy .`` and then you are ready to run galaxy with postgres. Examples:
+Now you are ready to run galaxy. Note that the first time galaxy is run, it will try to bootstrap the database (create tables and initial data). Examples:
 
 ```shell
 docker run -d --name galaxy --link postgres -p 8080:8080 galaxy

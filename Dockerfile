@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to Ubuntu
-FROM mig.ime.usp.br:5000/toolshed:latest
+FROM mig.ime.usp.br/toolshed:latest
 
 # Add neurodebian packages to apt-get and condor to apt-sources
 # TODO: This is required by many neuroimaging tools, but it should really be placed somewhere else (within tool?). For now, we will have to live with it.
@@ -50,13 +50,17 @@ VOLUME $GALAXY_DATA
 # Prepare startup and scramble eggs manually (see above TODO comment)
 WORKDIR $GALAXY_HOME
 
+RUN ./scripts/common_startup.sh
 RUN python scripts/scramble.py -c config/galaxy.ini.sample -e pydicom
 RUN python scripts/scramble.py -c config/galaxy.ini.sample -e nibabel
 
 # Add
-ADD config/galaxy.ini.docker config/galaxy.ini
-ADD config/shed_tool_conf.xml.docker config/shed_tool_conf.xml
-ADD config/job_conf.xml.docker config/job_conf.xml
+ADD config/galaxy.ini config/galaxy.ini
+ADD config/job_conf.xml.sample_basic config/job_conf.xml
+ADD config/job_conf.xml.sample_condor config/job_conf.xml
+ADD config/shed_tool_conf.xml config/shed_tool_conf.xml
+ADD config/tool_sheds_conf.xml config/tool_sheds_conf.xml
+ADD config/run-galaxy.sh run-galaxy.sh
 
 ENV GALAXY_CONFIG_DATABASE_CONNECTION postgresql://galaxy:calvin@postgres:5432/galaxy \
     GALAXY_CONFIG_FILE_PATH /data/files \
@@ -73,4 +77,4 @@ ENV GALAXY_CONFIG_DATABASE_CONNECTION postgresql://galaxy:calvin@postgres:5432/g
 
 EXPOSE 8080
 
-CMD GALAXY_RUN_ALL=1 ./run.sh --daemon && tail -f *.log
+ENTRYPOINT ["./run-galaxy.sh"]
