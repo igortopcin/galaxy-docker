@@ -14,6 +14,10 @@ fi
 
 cp $JOB_CONF_XML_SAMPLE ./config/job_conf.xml
 
+if [ ! -f "$GALAXY_DATA/shed_tool_conf.xml" ]; then
+    cp config/shed_tool_conf.xml $GALAXY_DATA/shed_tool_conf.xml
+fi
+
 export GALAXY_RUN_ALL=1
 ./run.sh --daemon $ARGS || exit 1
 

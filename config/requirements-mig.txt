@@ -1,0 +1,3 @@
+pydicom==0.9.9
+nibabel==2.0.2
+psycopg2

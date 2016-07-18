@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <tool_sheds>
     <tool_shed name="MIG main tool shed" url="http://mig.ime.usp.br/toolshed/"/>
+    <tool_shed name="MIG AWS tool shed" url="http://toolshed.migcloud.org/"/>
     <tool_shed name="Galaxy main tool shed" url="http://toolshed.g2.bx.psu.edu/"/>
     <tool_shed name="Galaxy test tool shed" url="http://testtoolshed.g2.bx.psu.edu/"/>
 </tool_sheds>

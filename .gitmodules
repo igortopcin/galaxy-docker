@@ -1,3 +1,4 @@
 [submodule "galaxy"]
 	path = galaxy
-	url = git@github.com:igortopcin/galaxy.git
+	url = https://github.com/galaxyproject/galaxy.git
+	branch = master

@@ -11,7 +11,7 @@ BIND_ALL_INTERFACES = FALSE
 #NETWORK_INTERFACE = 127.0.0.1
 
 ##  What machine is your central manager?
-CONDOR_HOST = condormanager
+CONDOR_HOST = condormanager.migcloud.org
 
 ## Pool's short description
 COLLECTOR_NAME = medsquare
@@ -58,8 +58,9 @@ ALLOW_READ = *
 ##    ALLOW_WRITE = *
 ##  but note that this will allow anyone to submit jobs or add
 ##  machines to your pool and is a serious security risk.
-ALLOW_WRITE = $(FULL_HOSTNAME), $(IP_ADDRESS), *.mig.ime.usp.br, localhost, 127.0.0.1
-# *.mig.ime.usp.br   ---> All sites that run MIGalaxy
+ALLOW_WRITE = $(FULL_HOSTNAME), $(IP_ADDRESS), *.mig.ime.usp.br, *.migcloud.org, localhost, 127.0.0.1
+# *.mig.ime.usp.br   ---> All sites that run Galaxy in USP's MIG server
+# *.migcloud.org   ---> All sites that run Galaxy in Amazon AWS
 #ALLOW_WRITE = *.your.domain, your-friend's-machine.other.domain
 
 ##  Are you upgrading to a new version of Condor and confused about
@@ -87,7 +88,7 @@ ALLOW_NEGOTIATOR_SCHEDD = $(CONDOR_HOST), $(FLOCK_NEGOTIATOR_HOSTS), $(IP_ADDRES
 ##  the execute machine and just make sure the two strings match.  The
 ##  default for this setting is False, since it is more secure this
 ##  way.
-UID_DOMAIN = medsquare.org
+UID_DOMAIN = migcloud.org
 TRUST_UID_DOMAIN = True
 
 ##  When is this machine willing to start a job?

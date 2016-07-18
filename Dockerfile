@@ -4,60 +4,48 @@
 ############################################################
 
 # Set the base image to Ubuntu
-FROM mig.ime.usp.br/toolshed:latest
+FROM ubuntu:trusty
 
-# Add neurodebian packages to apt-get and condor to apt-sources
-# TODO: This is required by many neuroimaging tools, but it should really be placed somewhere else (within tool?). For now, we will have to live with it.
-RUN wget -O- http://neuro.debian.net/lists/trusty.us-ca.full | tee /etc/apt/sources.list.d/neurodebian.sources.list && \
-    apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 2649A5A9 && \
-    echo "deb [arch=amd64] http://research.cs.wisc.edu/htcondor/debian/development/ wheezy contrib" >> /etc/apt/sources.list && \
+RUN apt-get update && apt-get install -y tar less git mercurial curl vim wget unzip netcat software-properties-common python-pip python-virtualenv
+RUN wget https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py -O - | python
+
+# Add condor to apt-sources
+RUN echo "deb [arch=amd64] http://research.cs.wisc.edu/htcondor/debian/development/ wheezy contrib" >> /etc/apt/sources.list && \
     echo "deb [arch=amd64] http://research.cs.wisc.edu/htcondor/debian/stable/ wheezy contrib" >> /etc/apt/sources.list && \
     wget -qO - http://research.cs.wisc.edu/htcondor/debian/HTCondor-Release.gpg.key | apt-key add - && \
     apt-get update
 
-RUN apt-get install -y \
-    mricron \
-    fsl-core \
-    afni \
-    condor
+RUN apt-get install -y condor
 
-# TODO: Configure uwsgi
-# RUN apt-get install -y \
-#     uwsgi \
-#     uwsgi-plugin-python
-
-# Configure AFNI and FSL
-# TODO: Only necessary because of tools that depend on these. Its installation should actually be handled by the tools themselves.
-RUN ["/bin/bash", "-c", "source /etc/afni/afni.sh"]
-RUN ["/bin/bash", "-c", "source /etc/fsl/fsl.sh"]
-
-# Configure condor submitter
-ADD ./config/condor_config.local /etc/condor/condor_config.local
 # Make sure we stop condor - it will be started just before we start galaxy server
 RUN /etc/init.d/condor stop
 
-ENV _CONDOR_CONDOR_HOST=condormanager \
+# Configure condor submitter
+ADD ./config/condor_config.local /etc/condor/condor_config.local
+
+ENV _CONDOR_CONDOR_HOST=condormanager.migcloud.org \
     _CONDOR_COLLECTOR_NAME=medsquare \
     _CONDOR_CONDOR_ADMIN=dev@mig.ime.usp.br
 
-# Update galaxy contents with Medical Imaging Galaxy
-RUN rm -rf $GALAXY_HOME
+ENV GALAXY_HOME=/usr/local/galaxy
 ADD galaxy $GALAXY_HOME
 
 # Expose Galaxy data dir as a mountable volume
+ENV GALAXY_DATA=/data
 VOLUME $GALAXY_DATA
 
-# Prepare startup and scramble eggs manually (see above TODO comment)
 WORKDIR $GALAXY_HOME
 
+RUN apt-get install -y python-dev libpq-dev
+ENV GALAXY_VIRTUAL_ENV=/usr/local/galaxy/galaxy_venv
+ADD config/requirements-mig.txt requirements-mig.txt
 RUN ./scripts/common_startup.sh
-RUN python scripts/scramble.py -c config/galaxy.ini.sample -e pydicom
-RUN python scripts/scramble.py -c config/galaxy.ini.sample -e nibabel
+RUN $GALAXY_VIRTUAL_ENV/bin/pip install -r requirements-mig.txt
 
-# Add
 ADD config/galaxy.ini config/galaxy.ini
 ADD config/job_conf.xml.sample_basic config/job_conf.xml
-ADD config/job_conf.xml.sample_condor config/job_conf.xml
+ADD config/job_conf.xml.sample_basic config/job_conf.xml.sample_basic
+ADD config/job_conf.xml.sample_condor config/job_conf.xml.sample_condor
 ADD config/shed_tool_conf.xml config/shed_tool_conf.xml
 ADD config/tool_sheds_conf.xml config/tool_sheds_conf.xml
 ADD config/run-galaxy.sh run-galaxy.sh
