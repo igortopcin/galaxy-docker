@@ -14,12 +14,12 @@
         <handler id="handler0" tags="handlers"/>
         <handler id="handler1" tags="handlers"/>
     </handlers>
-    <destinations default="condor">
+    <destinations default="local">
         <!-- Destinations define details about remote resources and how jobs
              should be executed on those remote resources.
          -->
         <destination id="local" runner="local"/>
-        <destination id="condor" runner="condor">
+        <destination id="freesurfer_cluster" runner="condor">
             <!-- With no params, jobs are submitted to the 'vanilla' universe with:
                     notification = NEVER
                     getenv = true
@@ -27,7 +27,13 @@
                  <param> tags.
             <param id="request_cpus">2</param>
             -->
+            <env file="/usr/local/galaxy/galaxy_venv/bin/activate" />
         </destination>
-
     </destinations>
+    <tools>
+        <tool id="mris_preproc" destination="freesurfer_cluster" />
+        <tool id="recon-all" destination="freesurfer_cluster" />
+        <tool id="mri_glmfit" destination="freesurfer_cluster" />
+        <tool id="asegstats2table" destination="freesurfer_cluster" />
+    </tools>
 </job_conf>
