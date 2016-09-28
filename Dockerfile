@@ -27,17 +27,19 @@ ENV _CONDOR_CONDOR_HOST=condormanager.migcloud.org \
     _CONDOR_COLLECTOR_NAME=medsquare \
     _CONDOR_CONDOR_ADMIN=dev@mig.ime.usp.br
 
-ENV GALAXY_HOME=/usr/local/galaxy
-ADD galaxy $GALAXY_HOME
-
-# Expose Galaxy data dir as a mountable volume
-ENV GALAXY_DATA=/data
+ENV GALAXY_HOME=/home/galaxy \
+    GALAXY_USER=galaxy \
+    GALAXY_UID=1450 \
+    GALAXY_GID=1450 \
+    HOME=$GALAXY_HOME \
+    GALAXY_DATA=/data
 VOLUME $GALAXY_DATA
 
+ADD galaxy $GALAXY_HOME
 WORKDIR $GALAXY_HOME
 
 RUN apt-get install -y python-dev libpq-dev
-ENV GALAXY_VIRTUAL_ENV=/usr/local/galaxy/galaxy_venv
+ENV GALAXY_VIRTUAL_ENV=$GALAXY_HOME/galaxy_venv
 ADD config/requirements-mig.txt requirements-mig.txt
 RUN ./scripts/common_startup.sh
 RUN $GALAXY_VIRTUAL_ENV/bin/pip install -r requirements-mig.txt
@@ -63,6 +65,10 @@ ENV GALAXY_CONFIG_DATABASE_CONNECTION postgresql://galaxy:calvin@postgres:5432/g
     GALAXY_CONFIG_ADMIN_USERS dev@mig.ime.usp.br \
     GALAXY_CONFIG_OVERRIDE_DEBUG=False
 
-EXPOSE 8080
+RUN groupadd -r $GALAXY_USER -g $GALAXY_GID && \
+    useradd -u $GALAXY_UID -r -g $GALAXY_USER -d $GALAXY_HOME -c "Galaxy user" $GALAXY_USER && \
+    chown -R $GALAXY_USER:$GALAXY_USER $GALAXY_HOME $GALAXY_DATA
+
+EXPOSE 8080 9618
 
 ENTRYPOINT ["./run-galaxy.sh"]

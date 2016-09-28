@@ -12,6 +12,8 @@ if [ $RUN_CONDOR -eq 0 ]; then
     /etc/init.d/condor start
 fi
 
+sudo -u $GALAXY_USER -i <<EOF
+env
 cp $JOB_CONF_XML_SAMPLE ./config/job_conf.xml
 
 if [ ! -f "$GALAXY_DATA/shed_tool_conf.xml" ]; then
@@ -20,5 +22,5 @@ fi
 
 export GALAXY_RUN_ALL=1
 ./run.sh --daemon $ARGS || exit 1
-
+EOF
 tail -f *.log
