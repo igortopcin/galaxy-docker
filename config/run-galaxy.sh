@@ -12,7 +12,7 @@ if [ $RUN_CONDOR -eq 0 ]; then
     /etc/init.d/condor start
 fi
 
-sudo -u $GALAXY_USER -i <<EOF
+su -m -l $GALAXY_USER <<EOF
 env
 cp $JOB_CONF_XML_SAMPLE ./config/job_conf.xml
 
