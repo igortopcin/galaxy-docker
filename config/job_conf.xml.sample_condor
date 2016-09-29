@@ -27,7 +27,7 @@
                  <param> tags.
             <param id="request_cpus">2</param>
             -->
-            <env file="/usr/local/galaxy/galaxy_venv/bin/activate" />
+            <env file="/home/galaxy/galaxy_venv/bin/activate" />
         </destination>
     </destinations>
     <tools>

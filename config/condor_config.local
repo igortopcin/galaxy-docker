@@ -9,6 +9,7 @@
 ## to choose from, it will pick the first one.
 BIND_ALL_INTERFACES = FALSE
 #NETWORK_INTERFACE = 127.0.0.1
+TCP_FORWARDING_HOST = condormanager.migcloud.org
 
 ##  What machine is your central manager?
 CONDOR_HOST = condormanager.migcloud.org
@@ -58,7 +59,7 @@ ALLOW_READ = *
 ##    ALLOW_WRITE = *
 ##  but note that this will allow anyone to submit jobs or add
 ##  machines to your pool and is a serious security risk.
-ALLOW_WRITE = $(FULL_HOSTNAME), $(IP_ADDRESS), *.mig.ime.usp.br, *.migcloud.org, localhost, 127.0.0.1
+ALLOW_WRITE = *
 # *.mig.ime.usp.br   ---> All sites that run Galaxy in USP's MIG server
 # *.migcloud.org   ---> All sites that run Galaxy in Amazon AWS
 #ALLOW_WRITE = *.your.domain, your-friend's-machine.other.domain
@@ -75,12 +76,12 @@ ALLOW_WRITE = $(FULL_HOSTNAME), $(IP_ADDRESS), *.mig.ime.usp.br, *.migcloud.org,
 ##  in the future.
 ##  Negotiator access.  Machines listed here are trusted central
 ##  managers.  You should normally not have to change this.
-ALLOW_NEGOTIATOR = $(CONDOR_HOST), $(IP_ADDRESS), localhost, 127.0.0.1
+ALLOW_NEGOTIATOR = *
 
 ##  Now, with flocking we need to let the SCHEDD trust the other
 ##  negotiators we are flocking with as well.  You should normally
 ##  not have to change this either.
-ALLOW_NEGOTIATOR_SCHEDD = $(CONDOR_HOST), $(FLOCK_NEGOTIATOR_HOSTS), $(IP_ADDRESS), localhost, 127.0.0.1
+ALLOW_NEGOTIATOR_SCHEDD = *
 
 ##  If your site needs to use UID_DOMAIN settings (defined above) that
 ##  are not real Internet domains that match the hostnames, you can
