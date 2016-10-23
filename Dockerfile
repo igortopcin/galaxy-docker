@@ -6,7 +6,7 @@
 # Set the base image to Ubuntu
 FROM ubuntu:trusty
 
-RUN apt-get update && apt-get install -y tar less git mercurial curl vim wget unzip netcat software-properties-common python-pip python-virtualenv
+RUN apt-get update && apt-get install -y tar less git mercurial curl vim wget unzip netcat software-properties-common python-pip python-virtualenv python-dev libpq-dev
 RUN wget https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py -O - | python
 
 # Add condor to apt-sources
@@ -38,7 +38,6 @@ VOLUME $GALAXY_DATA
 ADD galaxy $GALAXY_HOME
 WORKDIR $GALAXY_HOME
 
-RUN apt-get install -y python-dev libpq-dev
 ENV GALAXY_VIRTUAL_ENV=$GALAXY_HOME/galaxy_venv
 ADD config/requirements-mig.txt requirements-mig.txt
 RUN ./scripts/common_startup.sh

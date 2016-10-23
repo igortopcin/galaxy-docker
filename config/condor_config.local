@@ -9,7 +9,7 @@
 ## to choose from, it will pick the first one.
 BIND_ALL_INTERFACES = FALSE
 #NETWORK_INTERFACE = 127.0.0.1
-TCP_FORWARDING_HOST = condormanager.migcloud.org
+TCP_FORWARDING_HOST = galaxy.migcloud.org
 
 ##  What machine is your central manager?
 CONDOR_HOST = condormanager.migcloud.org
@@ -26,14 +26,14 @@ CONDOR_ADMIN = dev@mig.ime.usp.br
 ##  machine(s) where whoever is the condor administrator(s) works
 ##  (assuming you trust all the users who log into that/those
 ##  machine(s), since this is machine-wide access you're granting).
-ALLOW_ADMINISTRATOR = $(CONDOR_HOST), $(IP_ADDRESS), localhost, 127.0.0.1
+ALLOW_ADMINISTRATOR = $(CONDOR_HOST), $(IP_ADDRESS), localhost, 127.0.0.1, *.migcloud.org
 
 ##  What machines should have "owner" access to your machines, meaning
 ##  they can issue commands that a machine owner should be able to
 ##  issue to their own machine (like condor_vacate).  This defaults to
 ##  machines with administrator access, and the local machine.  This
 ##  is probably what you want.
-ALLOW_OWNER = $(FULL_HOSTNAME), $(ALLOW_ADMINISTRATOR), localhost, 127.0.0.1
+ALLOW_OWNER = $(FULL_HOSTNAME), $(ALLOW_ADMINISTRATOR), localhost, 127.0.0.1, *.migcloud.org
 
 ##  Read access.  Machines listed as allow (and/or not listed as deny)
 ##  can view the status of your pool, but cannot join your pool
@@ -108,7 +108,7 @@ KILL = FALSE
 
 ##  This macro determines what daemons the condor_master will start and keep its watchful eyes on.
 ##  The list is a comma or space separated list of subsystem names
-DAEMON_LIST = COLLECTOR, MASTER, NEGOTIATOR, SCHEDD
+DAEMON_LIST = MASTER, SCHEDD
 
 ## For a simple personal condor setup there are issues
 ## with default AUTH.
